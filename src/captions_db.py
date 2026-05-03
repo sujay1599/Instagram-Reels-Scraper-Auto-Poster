@@ -35,6 +35,8 @@ def save_caption(reel_code, original, processed):
 
 def get_processed_caption(reel_code):
     session = Session()
-    cap = session.query(Caption).filter_by(reel_code=reel_code).first()
-    session.close()
-    return cap.processed if cap else None
+    try:
+        cap = session.query(Caption).filter_by(reel_code=reel_code).first()
+        return cap.processed if cap else None
+    finally:
+        session.close()
