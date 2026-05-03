@@ -22,6 +22,7 @@ Reels-AutoPilot is a powerful GitHub repository that scrapes reels from specifie
 - [Usage](#usage)
     - [Running App](#usage)
     - [Dashboard](#dashboard)
+- [Standalone Downloader & Poster](#standalone-downloader--poster)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -108,6 +109,54 @@ To see real-time updates, open a new terminal and run:
 python dashboard.py
 ```
 
+## Standalone Downloader & Poster
+
+`ig_reel_downloader_poster.py` is a one-shot script you run manually (no scheduler, no daemon) that:
+
+1. **Downloads** reels from all configured source accounts via the Instagram API.
+2. **Preserves original captions** — `@mentions` are replaced with `@bigclappin`; hashtags from the original post are kept as-is. If the original had no hashtags, your configured placeholder hashtags are appended.
+3. **Burns a `@bigclappin` watermark** into the bottom-right corner of each video using moviepy before uploading.
+4. **Reposts** to your Instagram account with the processed caption.
+5. **Tracks state** in the existing SQLite database (`is_posted`, `posted_at`) and a new `captions` table so nothing gets posted twice.
+
+### Additional System Requirement
+
+The watermark feature uses moviepy's `TextClip`, which requires **ImageMagick**:
+
+```bash
+# Ubuntu / Debian
+sudo apt-get install imagemagick
+
+# macOS
+brew install imagemagick
+```
+
+### Running the Standalone Script
+
+Run from the **project root** (not from `src/`):
+
+```bash
+python ig_reel_downloader_poster.py
+```
+
+Make sure `src/start.py` has been run at least once so credentials and account lists are saved in the database, or set them directly in `src/config.py`.
+
+### Caption Behaviour
+
+| Scraped caption | Posted caption |
+|-----------------|----------------|
+| `"Cool clip @totalgaming #fyp #reels"` | `"Cool clip @bigclappin #fyp #reels"` |
+| `"Just vibes"` (no hashtags) | `"Just vibes\n\n#reels #shorts #likes #follow"` |
+| `""` (empty) | `"#reels #shorts #likes #follow"` |
+
+### Inspecting Stored Captions
+
+```bash
+sqlite3 database/sqlite.db "SELECT reel_code, original, processed FROM captions LIMIT 10;"
+```
+
+---
+
 ## Contributing
 
 To contribute to this project, submit pull requests or open issues with your suggestions and ideas.
@@ -171,4 +220,5 @@ If you continue to face issues or need further assistance, please open an issue 
 - **v1.0.0** - Initial release with basic scraping and posting features.
 - **v1.1.0** - Added support for scraping YouTube shorts and improved error handling.
 - **v1.2.0** - Implemented Docker configuration and enhanced documentation.
-- **v2.0.0** - Implemented added live dashboard, post-to-story feature, removed docker support and optimized login flow. 
+- **v2.0.0** - Implemented added live dashboard, post-to-story feature, removed docker support and optimized login flow.
+- **v2.1.0** - Added standalone `ig_reel_downloader_poster.py` with original caption preservation, `@mention` rewriting, `@bigclappin` video watermark, and `captions` database table. Fixed reel filter bug in `reels.py` and None-crash in `poster.py`.

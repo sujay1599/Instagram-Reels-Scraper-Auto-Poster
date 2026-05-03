@@ -38,7 +38,8 @@ def update_status(code):
 def get_reel():
     session = Session()
     reel = session.query(Reel).filter_by(is_posted=False).first()
-    print(reel.file_path)
+    if reel:
+        print(reel.file_path)
     session.close()
     return reel
 
