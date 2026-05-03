@@ -7,7 +7,7 @@ class Caption(Base):
     __tablename__ = 'captions'
 
     id         = Column(Integer, primary_key=True)
-    reel_code  = Column(String)
+    reel_code  = Column(String, index=True)
     original   = Column(String)   # raw scraped caption_text
     processed  = Column(String)   # ready-to-post caption (@mentions replaced, hashtags kept/appended)
     created_at = Column(DateTime)
