@@ -12,7 +12,7 @@ from helpers import print
 def get_reels(account,api):
     user_id = api.user_id_from_username(account)
     medias = api.user_medias(user_id, config.FETCH_LIMIT)
-    reels = [item for item in medias if (item.product_type == 'clips' , item.media_type == 2)]  # Filter for reels (product_type == 3)
+    reels = [item for item in medias if item.product_type == 'clips' or item.media_type == 2]
     return reels
 
 #Function to get file name from URL
