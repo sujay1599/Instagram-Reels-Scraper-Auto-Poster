@@ -74,7 +74,7 @@ def process_caption(original):
 
     if not re.search(r'#\w+', text):
         try:
-            placeholder = Helper.get_config('HASTAGS')
+            placeholder = Helper.get_config('HASHTAGS')
             if not placeholder:
                 raise ValueError
         except Exception:
